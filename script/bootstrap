@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# script/bootstrap: Resolve all dependencies that the application requires to
+#                   run.
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+ENV=.env
+
+if [[ $1 == "full" ]]; then
+	echo "==> Updating package list…"
+    sudo apt-get update -y
+
+	# echo "==> Upgrading…"
+    # sudo apt-get upgrade -y
+
+	echo "==> Installing Python and dependencies…"
+    sudo apt-get install build-essential python3-pip python3-dev -y
+    sudo -H pip3 install --upgrade pip
+    pip3 install --user virtualenv
+    pip3 install --user honcho
+
+	echo "==> Installing RabittMQ…"
+	sudo apt-get install rabbitmq-server -y
+
+	echo "==> Launching RabittMQ…"
+	sudo service rabbitmq-server start
+
+	# echo "==> Installing Redis…"
+	# sudo apt-get install redis-server
+
+    # if [ ! -d "$ENV" ]; then
+    # fi
+    echo "==> Creating Python virtual environment…"
+    rm $ENV -Rf || true
+    mkdir $ENV
+    virtualenv -p python3 $ENV
+fi
+
+. $ENV/bin/activate
+
+echo "==> Installing Python dependencies…"
+pip3 install --upgrade pip
+pip3 install -r requirements.txt

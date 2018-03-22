@@ -1,0 +1,12 @@
+# Dockerfile
+
+FROM python:3
+
+RUN mkdir /app
+WORKDIR /app
+ADD . /app/
+RUN pip install -r requirements.txt
+
+ENV DJANGO_SETTINGS_MODULE school.settings.production
+
+CMD ["/app/bin/runworker"]

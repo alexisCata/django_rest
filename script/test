@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# script/test: Run test suite for application. Optionally pass in a path to an
+#              individual test file to run a single test.
+
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+#[ -z "$DEBUG" ] || set -x
+
+script/update
+
+. .env/bin/activate
+
+echo "==> Running tests…"
+python manage.py test

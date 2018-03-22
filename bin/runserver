@@ -1,0 +1,20 @@
+#!/bin/bash
+
+sleep 10
+
+source .env/bin/activate
+
+
+python3 manage.py migrate --noinput
+
+if [ -n "${SCHOOL_TEST}" ]; then
+    echo "==> [TEST] Flush database..."
+    python3 manage.py flush --noinput
+fi
+
+python3 manage.py initadmin
+
+echo "==> Running server…"
+exec gunicorn school.wsgi:application \
+    --bind 0.0.0.0:8000 \
+    --workers 3

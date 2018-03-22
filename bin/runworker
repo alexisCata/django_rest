@@ -1,0 +1,11 @@
+#!/bin/bash
+
+sleep 10
+
+source .env/bin/activate
+
+# python3 manage.py migrate --noinput
+# python3 manage.py initadmin
+
+echo "==> Running worker…"
+exec celery -A school worker -l info --autoscale=4,2 --maxtasksperchild=1000

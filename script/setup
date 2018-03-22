@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# script/setup: Set up application for the first time after cloning, or set it
+#               back to the initial first unused state.
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+script/bootstrap
+
+. .env/bin/activate
+
+# Setup PostgreSQL DB
+# CREATE DATABASE school;
+# CREATE USER school WITH PASSWORD 'school';
+# ALTER ROLE school SET client_encoding TO 'utf8';
+# ALTER ROLE school SET default_transaction_isolation TO 'read committed';
+# ALTER ROLE school SET timezone TO 'UTC';
+# ALTER USER school CREATEDB;
+
+echo "==> Setting up DB…"
+python manage.py flush --no-input
+python manage.py migrate
+
+echo "==> Creating admin users…"
+echo "from core.models import User; User.objects.create_superuser(email='team@cathedralsw.com', password='password123')" | python manage.py shell
+
+echo "==> App is now ready to go!"
